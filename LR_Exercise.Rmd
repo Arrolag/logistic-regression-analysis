@@ -27,6 +27,11 @@ knitr::opts_chunk$set(echo = TRUE)
   th {
     background-color: #f2f2f2;
   }
+  .caption {
+    font-weight: bold; /* Make the caption text bold */
+    font-style: italic; /* Make the caption text italic */
+    text-align: center; /* Center-align the caption */
+  }
 </style>
 
 **Dataset Information**
