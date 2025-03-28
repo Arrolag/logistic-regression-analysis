@@ -536,7 +536,7 @@ $$\ln(\frac{\rho}{1-\rho}) = \beta_{0} + \beta_{1}X_{1} + \cdots + \beta_{p}X_{p
 
 where $X_1, \cdots, X_p$ are the predictor variables, $β_0, \cdots ,β_p$ are the regression coefficients, $\rho$ is the probability of success, i.e., the probability of obtaining a particular value of the target variable, and $\frac{\rho}{1-\rho}$ is the odds for success. 
 
-As income is a factor with two levels “<=50K” and “>50K”, R interprets success as “>50K”, i.e., the second level of income. For more information on how the *glm()* function recodes the levels of a factor response variable, have a look at *?glm*.
+The target, income, is a factor with two levels “<=50K” and “>50K”. R interprets the first level, “<=50K”, as failure and the second level, “>50K”, as success. For more information on how the *glm()* function handles the levels of factor variables, use the command *?glm* to access the function's documentation pages.
 
 For a continuous predictor, the regression coefficient gives the change in the log odds for success when the predictor increases by 1 unit. We can also say that the regression coefficient is the log of the odds ratio comparing people who differ in that predictor by 1 unit, when the remaining predictors are held fixed [@uclalogit]. For example, from the regression output above,
 
@@ -572,7 +572,7 @@ From the output above, we can now say that
 
 + The odds ratio for *income* being *>50K* comparing each level of education to the base level, *Pre-school-12th*, is greater than 1.
 
-## Model diagnostics
+## Model Evaluation
 
 *Task 10: Determine the training and test accuracy scores for your model.*
 

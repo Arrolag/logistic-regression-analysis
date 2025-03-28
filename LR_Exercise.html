@@ -2220,10 +2220,11 @@ predictor variables, <span class="math inline">\(β_0, \cdots
 the probability of obtaining a particular value of the target variable,
 and <span class="math inline">\(\frac{\rho}{1-\rho}\)</span> is the odds
 for success.</p>
-<p>As income is a factor with two levels “&lt;=50K” and “&gt;50K”, R
-interprets success as “&gt;50K”, i.e., the second level of income. For
-more information on how the <em>glm()</em> function recodes the levels
-of a factor response variable, have a look at <em>?glm</em>.</p>
+<p>The target, income, is a factor with two levels “&lt;=50K” and
+“&gt;50K”. R interprets the first level, “&lt;=50K”, as failure and the
+second level, “&gt;50K”, as success. For more information on how the
+<em>glm()</em> function handles the levels of factor variables, use the
+command <em>?glm</em> to access the function’s documentation pages.</p>
 <p>For a continuous predictor, the regression coefficient gives the
 change in the log odds for success when the predictor increases by 1
 unit. We can also say that the regression coefficient is the log of the
@@ -2297,8 +2298,8 @@ comparing each level of education to the base level,
 <em>Pre-school-12th</em>, is greater than 1.</p></li>
 </ul>
 </div>
-<div id="model-diagnostics" class="section level2">
-<h2>Model diagnostics</h2>
+<div id="model-evaluation" class="section level2">
+<h2>Model Evaluation</h2>
 <p><em>Task 10: Determine the training and test accuracy scores for your
 model.</em></p>
 <p>We can use the <em>predict()</em> function to get the probability of
