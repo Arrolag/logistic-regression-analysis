@@ -1675,15 +1675,16 @@ Whether an individual makes more than $50,000 annually
 <p style="font-weight: bold; text-indent: 30px;">
 Table 1: Description of Adult dataset variables.
 </p>
-<p>
-</p>
+<p><br></p>
 <p><strong>Objective:</strong> Use logistic regression to build a model
 that predicts a person’s income group, categorized as &lt;=50K or
 &gt;50K.</p>
+<p><br></p>
 <p>As we have already downloaded the data, we load it in R using the
 code below. The dataset consists of two parts: the training set,
-<em>adult.data</em>, and the test set, <em>adult.test</em>. We start by
-loading the training set, which is vital for exploration exercises.</p>
+<code>adult.data</code>, and the test set, <code>adult.test</code>. We
+start by loading the training set, which is vital for exploration
+exercises.</p>
 <pre class="r"><code># Read train data
 train_data &lt;- read.csv(&quot;C:/Users/User/Desktop/Logistic_Regression_ADULT/Data/adult.data&quot;, header = FALSE, sep = &quot;,&quot;, strip.white = TRUE, stringsAsFactors = TRUE)
 # Name columns
@@ -1712,7 +1713,7 @@ library(caret)
 library(dplyr)</code></pre>
 <p><strong>Task 2: Determine the internal structure of the
 dataset.</strong></p>
-<p>We use the <em>str()</em> function to gain an overview of the
+<p>We use the <code>str()</code> function to gain an overview of the
 dataset. This function provides information on dataset properties like
 dimension and data types.</p>
 <pre class="r"><code>str(train_data)</code></pre>
@@ -1732,22 +1733,22 @@ dimension and data types.</p>
  $ hours_per_week: int  40 13 40 40 40 40 16 45 50 40 ...
  $ native_country: Factor w/ 42 levels &quot;?&quot;,&quot;Cambodia&quot;,..: 40 40 40 40 6 40 24 40 40 40 ...
  $ income        : Factor w/ 2 levels &quot;&lt;=50K&quot;,&quot;&gt;50K&quot;: 1 1 1 1 1 1 1 2 2 2 ...</code></pre>
-<p>The output from the str() function shows that the training dataset
+<p>The output from <code>str()</code> shows that the training dataset
 has 32,561 observations and 15 variables. Our target variable is income,
 which has two categories &lt;=50K and &gt;50K. Therefore, we can use
 logistic regression to build a binary classification model.</p>
-<p>We also notice that the factor variables <em>workclass</em>,
-<em>occupation</em>, and <em>native_country</em> include levels denoted
-by a “?”. Upon examining the Variables Table provided at the UCI Machine
-Learning Repository within the Dataset Information section, we find that
-these columns have missing values. We conclude that the “?” symbol
-represents missing data.</p>
+<p>We also notice that the factor variables <code>workclass</code>,
+<code>occupation</code>, and <code>native_country</code> include levels
+denoted by a “?”. Upon examining the Variables Table provided at the UCI
+Machine Learning Repository within the Dataset Information section, we
+find that these columns have missing values. We conclude that the “?”
+symbol represents missing data.</p>
 <p><strong>Task 3: Handle missing data</strong></p>
 <p>The presence of missing data in a regression model can significantly
 impair the model’s accuracy in predicting responses. In this task, we
-examine the proportion of missing values in the <em>workclass</em>,
-<em>occupation</em>, and <em>native_country</em> columns of the training
-data.</p>
+examine the proportion of missing values in the <code>workclass</code>,
+<code>occupation</code>, and <code>native_country</code> columns of the
+training data.</p>
 <pre class="r"><code># Percentage of missing values in workclass
 nrow(train_data[train_data$workclass == &#39;?&#39;, ]) * 100/nrow(train_data)</code></pre>
 <pre><code>[1] 5.638647</code></pre>
@@ -1758,10 +1759,10 @@ nrow(train_data[train_data$occupation == &#39;?&#39;, ]) * 100/nrow(train_data)<
 nrow(train_data[train_data$native_country == &#39;?&#39;, ]) * 100/nrow(train_data)</code></pre>
 <pre><code>[1] 1.790486</code></pre>
 <p>We find that the highest percentage of missing values occurs in the
-<em>workclass</em> and <em>occupation</em> variables, with about 5% of
-the training data missing in each case. As we’d like to retain these
-missing values, we recode them as “Missing”, creating an additional
-category for each variable.</p>
+<code>workclass</code> and <code>occupation</code> variables, with about
+5% of the training data missing in each case. As we’d like to retain
+these missing values, we recode them as “Missing”, creating an
+additional category for each variable.</p>
 <pre class="r"><code>train_data$workclass &lt;- recode(train_data$workclass, &quot;?&quot; = &quot;Missing&quot;)
 train_data$occupation &lt;- recode(train_data$occupation, &quot;?&quot; = &quot;Missing&quot;)
 train_data$native_country &lt;- recode(train_data$native_country, &quot;?&quot; = &quot;Missing&quot;)</code></pre>
@@ -1772,8 +1773,8 @@ near-zero-variance variable has very few unique values. These variables
 are also termed low cardinality variables, where cardinality refers to
 the number of unique values a variable has. Because they contain little
 information, they are unimportant to the analysis <span class="citation">(Boehmke and Greenwell 2019)</span>. We use the
-<em>nearZeroVar()</em> function from the <em>caret</em> package to
-identify these variables in the training data.</p>
+<code>nearZeroVar()</code> function from the <code>caret</code> package
+to identify these variables in the training data.</p>
 <pre class="r"><code>X = nearZeroVar(train_data, saveMetrics = TRUE)
 X</code></pre>
 <pre><code>                freqRatio percentUnique zeroVar   nzv
@@ -1794,9 +1795,9 @@ native_country  45.365474   0.128988667   FALSE  TRUE
 income           3.152659   0.006142317   FALSE FALSE</code></pre>
 <p>From the above output, the training data has no zero-variance
 variables but contains several near-zero-variance variables, namely,
-<em>capital_gain</em>, <em>capital_loss</em>, and
-<em>native_country</em>. We use histograms to explore
-<em>capital_gain</em> and <em>capital_loss</em> further.</p>
+<code>capital_gain</code>, <code>capital_loss</code>, and
+<code>native_country</code>. We use histograms to explore
+<code>capital_gain</code> and <code>capital_loss</code> further.</p>
 <pre class="r"><code># Remove scientific notation
 options(scipen = 999)
 
@@ -1812,13 +1813,15 @@ plot_grid(cg_plot, cl_plot, labels = c(&#39;A&#39;, &#39;B&#39;), label_size = 1
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 1: Histograms of A) capital_gain and B) capital_loss.
 </p>
-<p>Figure 1 reveals that the distributions of <em>capital_gain</em> and
-<em>capital_loss</em> are strongly skewed to the right, with most
-observations being zero. Therefore, we discard these two variables.</p>
-<p>In addition, the frequency distribution of <em>native_country</em>
-shown below indicates that almost 90% (29170/32561) of all entries fall
-within the <em>United-States</em> category. Because of this heavy
-skewness, we exclude this variable from our analysis.</p>
+<p>Figure 1 reveals that the distributions of <code>capital_gain</code>
+and <code>capital_loss</code> are strongly skewed to the right, with
+most observations being zero. Therefore, we discard these two
+variables.</p>
+<p>In addition, the frequency distribution of
+<code>native_country</code> shown below indicates that almost 90%
+(29170/32561) of all entries fall within the <code>United-States</code>
+category. Because of this heavy skewness, we exclude this variable from
+our analysis.</p>
 <pre class="r"><code># Frequencies of levels in native_country
 summary(train_data$native_country)</code></pre>
 <pre><code>                   Missing                   Cambodia 
@@ -1867,33 +1870,37 @@ Outlying-US(Guam-USVI-etc)                       Peru
 train_data$capital_gain &lt;- NULL
 train_data$capital_loss &lt;- NULL
 train_data$native_country &lt;- NULL</code></pre>
-<p><strong>Task 5: Discard closely related (collinear) independent
+<p><strong>Task 5: Discard closely related independent
 variables.</strong></p>
-<p>Two or more variables are considered collinear when they are so
-strongly correlated that it is difficult to determine their individual
-effects on the target variable. In the training dataset,
-<em>education</em> and <em>education_num</em> are collinear, as
-<em>education_num</em> is simply a numeric representation of
-<em>education</em>. The two variables contain the same information, so
-we discard one, i.e., <em>education_num</em>.</p>
+<p>Two variables are considered collinear when they are so strongly
+correlated that it is difficult to determine their individual effects on
+the target variable. When this type of relationship occurs between more
+than two variables, we refer to it as multicollinearity. In the training
+dataset, <code>education</code> and <code>education_num</code> are
+collinear, as <code>education_num</code> is simply a numeric
+representation of <code>education</code>. The two variables contain the
+same information, so we discard one, i.e.,
+<code>education_num</code>.</p>
 <pre class="r"><code># Drop one of a pair of collinear variables
 train_data$education_num &lt;- NULL</code></pre>
 <p><strong>Task 6: Discard variables that aren’t important to the
 analysis.</strong></p>
-<p>Here, we discard <em>fnlwgt</em> and <em>relationship</em>.</p>
+<p>Here, we discard <code>fnlwgt</code> and
+<code>relationship</code>.</p>
 <pre class="r"><code># Drop irrelevant variables
 train_data$fnlwgt &lt;- NULL
 train_data$relationship &lt;- NULL</code></pre>
 <p><strong>Task 7: Lump levels of independent categorical features with
 few observations.</strong></p>
 <p>The independent categorical variables in the dataset are
-<em>workclass</em>, <em>education</em>, <em>marital_status</em>,
-<em>occupation</em>, <em>race</em>, and <em>sex</em>. We explore each of
-these variables to determine instances where level lumping can be
-applied to reduce the noise in the data.</p>
-<p><strong>Lump <em>workclass</em> levels</strong></p>
+<code>workclass</code>, <code>education</code>,
+<code>marital_status</code>, <code>occupation</code>, <code>race</code>,
+and <code>sex</code>. We explore each of these variables to determine
+instances where level lumping can be applied to reduce the noise in the
+data.</p>
+<p><strong>Lump <code>workclass</code> levels</strong></p>
 <p>We use a barplot to compare the number of people belonging to each
-<em>workclass</em> level.</p>
+<code>workclass</code> level.</p>
 <pre class="r"><code># Barplot of workclass
 wc_plot &lt;- ggplot(data = train_data, aes(x = workclass)) + geom_bar(fill=&quot;steelblue&quot;) + labs(x = &quot;Work Class&quot;, y = &quot;Count&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
 
@@ -1902,14 +1909,14 @@ wc_plot</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 2: Barplot showing the distribution of people by workclass.
 </p>
-<p>Figure 2 shows that the two levels, <em>Without-pay</em> and
-<em>Never-worked</em> have very few observations. So, we lump them
+<p>Figure 2 shows that the two levels, <code>Without-pay</code> and
+<code>Never-worked</code> have very few observations. So, we lump them
 together with the Missing in a level called “Other/Missing”. We also
-lump <em>State-gov</em>, <em>Local-gov</em>,* and <em>Federal-gov</em>
-into a new level called “Gov,” as they all pertain to government-related
-work. <em>Self-emp-not-inc</em> and <em>Self-emp-inc</em> are
-consolidated into a new level called “Self-emp,” as both are related to
-self-employment.</p>
+lump <code>State-gov</code>, <code>Local-gov</code>, and
+<code>Federal-gov</code> into a new level called “Gov,” as they all
+pertain to government-related work. <code>Self-emp-not-inc</code> and
+<code>Self-emp-inc</code> are consolidated into a new level called
+“Self-emp,” as both are related to self-employment.</p>
 <pre class="r"><code># Change names of workclass levels
 train_data$workclass &lt;- recode(train_data$workclass, &quot;Missing&quot; = &quot;Other/Missing&quot;, &quot;Federal-gov&quot; = &quot;Gov&quot;, &quot;Local-gov&quot; = &quot;Gov&quot;, &quot;Never-worked&quot; = &quot;Other/Missing&quot;, &quot;Self-emp-inc&quot; = &quot;Self-emp&quot;, &quot;Self-emp-not-inc&quot; = &quot;Self-emp&quot;, &quot;State-gov&quot; = &quot;Gov&quot;, &quot;Without-pay&quot; = &quot;Other/Missing&quot;)
 
@@ -1918,14 +1925,14 @@ table(train_data$workclass)</code></pre>
 <pre><code>
 Other/Missing           Gov       Private      Self-emp 
          1857          4351         22696          3657 </code></pre>
-<p>We want the first (base) level of <em>workclass</em> to be a
+<p>We want the first (base) level of <code>workclass</code> to be a
 meaningful quantity that can later help with interpreting regression
-results. So, we use the <em>relevel()</em> function to reorder these
+results. So, we use the <code>relevel()</code> function to reorder these
 levels, removing “Other/Missing” as the base level.</p>
 <pre class="r"><code>train_data$workclass &lt;- relevel(train_data$workclass, ref = &quot;Gov&quot;)</code></pre>
-<p><strong>Lump <em>education</em> levels</strong></p>
+<p><strong>Lump <code>education</code> levels</strong></p>
 <p>The barplot in Figure 3 explores the distribution of people by
-education. Here is the code used to create this plot:</p>
+<code>education</code>. Here is the code used to create this plot:</p>
 <pre class="r"><code># Barplot of education
 ed_plot &lt;- ggplot(data = train_data, aes(x = education)) + geom_bar(fill=&quot;steelblue&quot;) + labs(x = &quot;Education&quot;, y = &quot;Count&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
 
@@ -1934,11 +1941,11 @@ ed_plot</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 3: Barplot showing the distribution of people by education.
 </p>
-<p>We see that all levels from <em>Preschool</em> to <em>12th grade</em>
-have somewhat low frequencies. So, we lump these levels into a new
-category called <em>Preschool-12th</em>. We also merge
-<em>Assoc-voc</em> and <em>Assoc-acdm</em> into a single level called
-<em>Associate</em>, as shown in the code below.</p>
+<p>We see that all levels from <code>Preschool</code> to
+<code>12th grade</code> have somewhat low frequencies. So, we lump these
+levels into a new category called <code>Preschool-12th</code>. We also
+merge <code>Assoc-voc</code> and <code>Assoc-acdm</code> into a single
+level called <code>Associate</code>, as shown in the code below.</p>
 <pre class="r"><code># Recode education levels
 train_data$education &lt;- recode(train_data$education, &quot;10th&quot; = &quot;Preschool-12th&quot;, &quot;11th&quot; = &quot;Preschool-12th&quot;, &quot;12th&quot; = &quot;Preschool-12th&quot;, &quot;1st-4th&quot; = &quot;Preschool-12th&quot;, &quot;5th-6th&quot; = &quot;Preschool-12th&quot;, &quot;7th-8th&quot; = &quot;Preschool-12th&quot;, &quot;9th&quot; = &quot;Preschool-12th&quot;, &quot;Assoc-acdm&quot; = &quot;Associate&quot;, &quot;Assoc-voc&quot; = &quot;Associate&quot;, &quot;Preschool&quot; = &quot;Preschool-12th&quot;)
 
@@ -1948,9 +1955,9 @@ Preschool-12th      Associate      Bachelors      Doctorate        HS-grad
           4253           2449           5355            413          10501 
        Masters    Prof-school   Some-college 
           1723            576           7291 </code></pre>
-<p><strong>Lump <em>marital_status</em> levels</strong></p>
+<p><strong>Lump <code>marital_status</code> levels</strong></p>
 <p>The barplot in Figure 4 explores the distribution of people by
-<em>marital_status</em>.</p>
+<code>marital_status</code>.</p>
 <pre class="r"><code># Barplot of marital_status
 ms_plot &lt;- ggplot(data = train_data, aes(x = marital_status)) + geom_bar(fill=&quot;steelblue&quot;) + labs(x = &quot;Marital Status&quot;, y = &quot;Count&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
 
@@ -1959,10 +1966,10 @@ ms_plot</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 4: Barplot showing the distribution of people by marital_status.
 </p>
-<p>We lump <em>Married-spouse-absent</em>, <em>Married-civ-spouse</em>,
-and <em>Married-AF-spouse</em> into a level called “Married”, as they
-all denote married people. By doing so, we reduce the number of levels
-in this variable to 5.</p>
+<p>We lump <code>Married-spouse-absent</code>,
+<code>Married-civ-spouse</code>, and <code>Married-AF-spouse</code> into
+a level called “Married”, as they all denote married people. By doing
+so, we reduce the number of levels in this variable to 5.</p>
 <pre class="r"><code># Recode marital_status levels
 train_data$marital_status &lt;- recode(train_data$marital_status, &quot;Married-AF-spouse&quot; = &quot;Married&quot;, &quot;Married-civ-spouse&quot; = &quot;Married&quot;, &quot;Married-spouse-absent&quot; = &quot;Married&quot;)
 
@@ -1970,7 +1977,7 @@ table(train_data$marital_status)</code></pre>
 <pre><code>
      Divorced       Married Never-married     Separated       Widowed 
          4443         15417         10683          1025           993 </code></pre>
-<p><strong>Lump <em>occupation</em> levels</strong></p>
+<p><strong>Lump <code>occupation</code> levels</strong></p>
 <p>The barplot in Figure 5 illustrates the counts of people in each
 level of occupation. Here is the code used to create this plot.</p>
 <pre class="r"><code>oc_plot &lt;- ggplot(data = train_data, aes(x = occupation)) + geom_bar(fill=&quot;steelblue&quot;) + labs(x = &quot;Occupation&quot;, y = &quot;Count&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
@@ -2004,12 +2011,12 @@ table(train_data$occupation)</code></pre>
             Technical 
                   928 </code></pre>
 <p>We also reorder the levels of occupation so that the first level is
-<em>Clerical</em>, a more meaningful quantity than
-<em>Other/Missing</em>.</p>
+<code>Clerical</code>, a more meaningful quantity than
+<code>Other/Missing</code>.</p>
 <pre class="r"><code>train_data$occupation &lt;- relevel(train_data$occupation, ref = &quot;Clerical&quot;)</code></pre>
-<p><strong>Lump <em>race</em> levels</strong></p>
-<p>The barplot in Figure 6 shows the counts of people by race. Here is
-the code used to create it:</p>
+<p><strong>Lump <code>race</code> levels</strong></p>
+<p>The barplot in Figure 6 shows the counts of people by
+<code>race</code>. Here is the code used to create it:</p>
 <pre class="r"><code>r_plot &lt;- ggplot(data = train_data, aes(x = race)) + geom_bar(fill=&quot;steelblue&quot;) + labs(x = &quot;Race&quot;, y = &quot;Count&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
 
 r_plot</code></pre>
@@ -2019,8 +2026,8 @@ Figure 6: Barplot showing distribution of people by race.
 </p>
 <p>We see that more than 20000 people are white, and the next most
 populous race is black, with less than 5000 people. To simplify our
-analysis, we regroup race into two levels, <em>White</em> and
-<em>Non-white</em>.</p>
+analysis, we regroup race into two levels, <code>White</code> and
+<code>Non-white</code>.</p>
 <pre class="r"><code># Recode race levels
 train_data$race &lt;- recode(train_data$race, &quot;Amer-Indian-Eskimo&quot; = &quot;Non-white&quot;, &quot;Asian-Pac-Islander&quot; = &quot;Non-white&quot;, &quot;Black&quot; = &quot;Non-white&quot;, &quot;Other&quot; = &quot;Non-white&quot;)
 
@@ -2028,9 +2035,9 @@ table(train_data$race)</code></pre>
 <pre><code>
 Non-white     White 
      4745     27816 </code></pre>
-<p><strong>Lump <em>sex</em> levels</strong></p>
-<p>Figure 7 shows the number of people in each level of sex. Here is the
-code used to create it:</p>
+<p><strong>Lump <code>sex</code> levels</strong></p>
+<p>Figure 7 shows the number of people in each level of
+<code>sex</code>. Here is the code used to create it:</p>
 <pre class="r"><code>s_plot &lt;- ggplot(data = train_data, aes(x = sex)) + geom_bar(fill=&quot;steelblue&quot;) + labs(x = &quot;Sex&quot;, y = &quot;Count&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
 
 s_plot</code></pre>
@@ -2038,9 +2045,9 @@ s_plot</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 7: Barplot showing the distribution of people by sex.
 </p>
-<p>We see that most people in the data are male. As sex only has two
-levels, both of which are important to the analysis, we don’t do any
-lumping here.</p>
+<p>We see that most people in the data are male. As <code>sex</code>
+only has two levels, both of which are important to the analysis, we
+don’t do any lumping here.</p>
 <p><strong>Task 8: Study the relationship between income and each of the
 independent variables.</strong></p>
 <p>Before we build our model, we want to see if there are specific
@@ -2048,8 +2055,8 @@ differences between people with incomes &lt;=50K and those with incomes
 &gt;50K. So, we examine the relationship between income and each
 independent variable.</p>
 <p><strong>Income vs. Age</strong></p>
-<p>We use a histogram to determine the relationship between <em>age</em>
-and <em>income</em>.</p>
+<p>We use a histogram to determine the relationship between
+<code>age</code> and <code>income</code>.</p>
 <pre class="r"><code>age_plot &lt;- ggplot(train_data, aes(x = age, fill = income)) +
     geom_histogram(position = &quot;identity&quot;, alpha = 0.4, bins = 30) + labs(x = &quot;Age&quot;, y = &quot;Count&quot;, fill = &quot;Income&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12)
 
@@ -2058,16 +2065,16 @@ age_plot</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 8: Histogram showing the distribution of income by age.
 </p>
-<p>Figure 8 shows that more people have incomes of <em>&lt;=50K</em>
-than of <em>&gt;50K</em>. The minimum age for people with incomes
-<em>&lt;=50K</em> is slightly less than that for people of the other
-income group. Also, the distribution of ages in the <em>&lt;=50K</em>
-group is heavily skewed to the right, suggesting that the mean age of
-this group is higher than the median age.</p>
+<p>Figure 8 shows that more people have incomes of <code>&lt;=50K</code>
+than of <code>&gt;50K</code>. The minimum age for people with incomes
+<code>&lt;=50K</code> is slightly less than that for people of the other
+income group. Also, the distribution of ages in the
+<code>&lt;=50K</code> group is heavily skewed to the right, suggesting
+that the mean age of this group is higher than the median age.</p>
 <p><strong>Income Vs. workclass</strong></p>
 <p>Here is the code used to create the proportional stacked barplot in
-Figure 9, showing the relationship between <em>workclass</em> and
-<em>income</em>:</p>
+Figure 9, showing the relationship between <code>workclass</code> and
+<code>income</code>:</p>
 <pre class="r"><code>wc_plot2 &lt;- ggplot(data = train_data, aes(x = workclass, fill = income)) + geom_bar(position = &quot;fill&quot;) + scale_fill_manual(values = c(&quot;#f0b27a&quot;, &quot;#85c1e9&quot;)) + labs(x = &quot;Work Class&quot;, y = &quot;Proportion&quot;, fill = &quot;Income&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12)
 
 wc_plot2</code></pre>
@@ -2075,10 +2082,10 @@ wc_plot2</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 9: Barplot showing the distribution of income by workclass.
 </p>
-<p>From the barplot, we see that the <em>workclass</em> with the highest
-proportion of <em>&gt;50K</em> income earners is <em>Self-emp</em>,
-while that with the smallest proportion of this group of earners is
-<em>Other/Missing</em>.</p>
+<p>From the barplot, we see that the <code>workclass</code> with the
+highest proportion of <code>&gt;50K</code> income earners is
+<code>Self-emp</code>, while that with the smallest proportion of this
+group of earners is <code>Other/Missing</code>.</p>
 <p><strong>Income Vs. Education</strong></p>
 <p>Here is the code for creating the barplot in Figure 10:</p>
 <pre class="r"><code>ed_plot2 &lt;- ggplot(data = train_data, aes(x = education, fill = income)) + geom_bar(position = &quot;fill&quot;) + scale_fill_manual(values = c(&quot;#f0b27a&quot;, &quot;#85c1e9&quot;)) + labs(x = &quot;Education&quot;, y = &quot;Proportion&quot;, fill = &quot;Income&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
@@ -2088,11 +2095,11 @@ ed_plot2</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 10: Barplot showing the distribution of income by education.
 </p>
-<p>The barplot reveals that the <em>Prof-school</em> and
-<em>Doctorate</em> levels of education have the highest proportions of
-people with an annual income <em>&gt;50K</em>. Also, the proportion of
-<em>&gt;50K</em> income earners appears to increase with an increase in
-the level of education.</p>
+<p>The barplot reveals that the <code>Prof-school</code> and
+<code>Doctorate</code> levels of education have the highest proportions
+of people with an annual income <code>&gt;50K</code>. Also, the
+proportion of <code>&gt;50K</code> income earners appears to increase
+with an increase in the level of education.</p>
 <p><strong>Income Vs. Marital Status</strong></p>
 <p>We use the code below to create the barplot in Figure 11:</p>
 <pre class="r"><code>ms_plot2 &lt;- ggplot(data = train_data, aes(x = marital_status, fill = income)) + geom_bar(position = &quot;fill&quot;) + scale_fill_manual(values = c(&quot;#f0b27a&quot;, &quot;#85c1e9&quot;)) + labs(x = &quot;Marital Status&quot;, y = &quot;Proportion&quot;, fill = &quot;Income&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
@@ -2102,10 +2109,10 @@ ms_plot2</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 11: Barplot showing the distribution of income by marital_status.
 </p>
-<p>The barplot shows that the highest proportion of <em>&gt;50K</em>
-income earners are found in the <em>Married</em> group, followed by the
-<em>Divorced</em>, <em>Widowed</em>, <em>Separated</em>, and
-<em>Never-married</em> groups, in that order.</p>
+<p>The barplot shows that the highest proportion of <code>&gt;50K</code>
+income earners are found in the <code>Married</code> group, followed by
+the <code>Divorced</code>, <code>Widowed</code>, <code>Separated</code>,
+and <code>Never-married</code> groups, in that order.</p>
 <p><strong>Income Vs. Occupation</strong></p>
 <p>We create the barplot in Figure 12 using the following code:</p>
 <pre class="r"><code>oc_plot2 &lt;- ggplot(data = train_data, aes(x = occupation, fill = income)) + geom_bar(position = &quot;fill&quot;) + scale_fill_manual(values = c(&quot;#f0b27a&quot;, &quot;#85c1e9&quot;)) + labs(x = &quot;Occupation&quot;, y = &quot;Proportion&quot;, fill = &quot;Income&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12) + coord_flip()
@@ -2116,10 +2123,10 @@ oc_plot2</code></pre>
 Figure 12: Barplot showing the distribution of income by occupation.
 </p>
 <p>From the barplot, we see that the highest proportion of
-<em>&gt;50K</em> income earners are found in the <em>Managers</em>
-group, followed by the <em>Professionals</em> and <em>Technical</em>
-groups. The <em>Other/Missing</em> group has the lowest proportion of
-<em>&gt;50K</em> income earners.</p>
+<code>&gt;50K</code> income earners are found in the
+<code>Managers</code> group, followed by the <code>Professionals</code>
+and <code>Technical</code> groups. The <code>Other/Missing</code> group
+has the lowest proportion of <code>&gt;50K</code> income earners.</p>
 <p><strong>Income Vs. Race</strong></p>
 <p>The code below creates the barplot in Figure 13, showing the
 distribution of income across race levels.</p>
@@ -2130,12 +2137,13 @@ r_plot2</code></pre>
 <p style="font-weight: bold; text-indent: 30px;">
 Figure 13: Barplot showing the distribution of income by race.
 </p>
-<p>The barplot shows that the <em>White</em> group has a larger
-proportion of <em>&gt;50K</em> income earners than the
-<em>Non-white</em> group.</p>
+<p>The barplot shows that the <code>White</code> group has a larger
+proportion of <code>&gt;50K</code> income earners than the
+<code>Non-white</code> group.</p>
 <p><strong>Income Vs. Hours/Week</strong></p>
 <p>We use the code below to plot the histogram in Figure 14, showing the
-relationship between income and hours_per_week.</p>
+relationship between <code>income</code> and
+<code>hours_per_week</code>.</p>
 <pre class="r"><code>hpw_plot &lt;- ggplot(train_data, aes(x = hours_per_week, fill = income)) +
     geom_histogram(position = &quot;identity&quot;, alpha = 0.4, bins = 30) + labs(x = &quot;Hours/Week&quot;, y = &quot;Count&quot;, fill = &quot;Income&quot;) + theme(axis.title = element_text(family = &quot;Arial&quot;)) + theme_cowplot(12)
 
@@ -2147,26 +2155,21 @@ hours_per_week.
 </p>
 <p>From the histogram, we see that most people in the training data work
 about 40 hours/week. A large proportion of those who work less than 40
-hours/week are &lt;=50K income earners. However, looking at the
-distribution of the &gt;50K income earners, the bars to the right of the
-40 hours/week are longer than those to the left, meaning that many
-people in this income group work more than 40 hours/week.</p>
+hours/week are <code>&lt;=50K</code> income earners. However, looking at
+the distribution of the <code>&gt;50K</code> income earners, the bars to
+the right of the 40 hours/week are longer than those to the left,
+meaning that many people in this income group work more than 40
+hours/week.</p>
 </div>
 <div id="build-model" class="section level2">
 <h2>Build Model</h2>
 <p><strong>Task 9: Build a binary logistic regression
 model.</strong></p>
-<p>First, we calculate a baseline accuracy score for the model. This
-score is typically the proportion of the majority class, as a naïve
-model is highly likely to always predict this class.</p>
-<pre class="r"><code>round(nrow(train_data[train_data$income == &#39;&lt;=50K&#39;, ])/nrow(train_data), 2)</code></pre>
-<pre><code>[1] 0.76</code></pre>
-<p>So, the baseline accuracy score is 0.76.</p>
-<p>Next, we use the <em>glm()</em> function to build a model that
-predicts income group based on the variables <em>age</em>,
-<em>workclass</em>, <em>education</em>, <em>marital_status</em>,
-<em>occupation</em>, <em>race</em>, <em>sex</em>, and
-<em>hours_per_week</em>.</p>
+<p>We use the <code>glm()</code> function to build a model that predicts
+income group based on the variables <code>age</code>,
+<code>workclass</code>, <code>education</code>,
+<code>marital_status</code>, <code>occupation</code>, <code>race</code>,
+<code>sex</code>, and <code>hours_per_week</code>.</p>
 <pre class="r"><code>options(scipen=0)
 model1 &lt;- glm(income ~ ., family = &quot;binomial&quot;, data = train_data)
 summary(model1)</code></pre>
@@ -2220,11 +2223,13 @@ predictor variables, <span class="math inline">\(β_0, \cdots
 the probability of obtaining a particular value of the target variable,
 and <span class="math inline">\(\frac{\rho}{1-\rho}\)</span> is the odds
 for success.</p>
-<p>The target, income, is a factor with two levels “&lt;=50K” and
-“&gt;50K”. R interprets the first level, “&lt;=50K”, as failure and the
-second level, “&gt;50K”, as success. For more information on how the
-<em>glm()</em> function handles the levels of factor variables, use the
-command <em>?glm</em> to access the function’s documentation pages.</p>
+<p>The target, income, is a factor with two levels <code>&lt;=50K</code>
+and <code>&gt;50K</code>. R interprets the first level,
+<code>&lt;=50K</code>, as failure and the second level,
+<code>&gt;50K</code>, as success. For more information on how the
+<code>glm()</code> function handles the levels of factor variables, use
+the command <code>?glm</code> to access the function’s documentation
+pages.</p>
 <p>For a continuous predictor, the regression coefficient gives the
 change in the log odds for success when the predictor increases by 1
 unit. We can also say that the regression coefficient is the log of the
@@ -2233,10 +2238,11 @@ the remaining predictors are held fixed <span class="citation">(UCLA:
 Statistical Consulting Group, n.d.)</span>. For example, from the
 regression output above,</p>
 <ul>
-<li><p>A 1 unit increase in age should result in a 0.029 increase in the
-log odds of income being &gt;50K.</p></li>
-<li><p>A 1 unit increase in hours_per_week should result in a 0.030
-increase in the log odds of income being &gt;50K.</p></li>
+<li><p>A 1 unit increase in <code>age</code> should result in a 0.029
+increase in the log odds of income being <code>&gt;50K</code>.</p></li>
+<li><p>A 1 unit increase in <code>hours_per_week</code> should result in
+a 0.030 increase in the log odds of income being
+<code>&gt;50K</code>.</p></li>
 </ul>
 <p>By contrast, the regression coefficient for a level of a categorical
 predictor gives the log of the odds ratio comparing people at the given
@@ -2244,15 +2250,14 @@ level to those at the base level, when other predictors are held fixed.
 So, it is crucial for the base level to be a meaningful quantity.</p>
 <p>From the regression output above, we can say that</p>
 <ul>
-<li><p>The log of the odds ratio for <em>income</em> being
-<em>&gt;50K</em> comparing <em>males</em> to <em>females</em> is
-0.313.</p></li>
-<li><p>The log of the odds ratio for <em>income</em> being
-<em>&gt;50K</em> comparing <em>whites</em> to <em>non-whites</em> is
+<li><p>The log of the odds ratio for income being <code>&gt;50K</code>
+comparing <code>males</code> to <code>females</code> is 0.313.</p></li>
+<li><p>The log of the odds ratio for income being <code>&gt;50K</code>
+comparing <code>whites</code> to <code>non-whites</code> is
 0.281.</p></li>
-<li><p>The log of the odds ratio for <em>income</em> being
-<em>&gt;50K</em> comparing each level of education to the base level,
-<em>Pre-school-12th</em>, is greater than 1</p></li>
+<li><p>The log of the odds ratio for income being <code>&gt;50K</code>
+comparing each level of education to the base level,
+<code>Pre-school-12th</code>, is greater than 1</p></li>
 </ul>
 <p>We can also exponentiate the regression coefficients to give odd
 ratios. Here is the code:</p>
@@ -2285,29 +2290,41 @@ ratios. Here is the code:</p>
                    1.030626e+00 </code></pre>
 <p>From the output above, we can now say that</p>
 <ul>
-<li><p>The odds of <em>income</em> being <em>&gt;50K</em> increases by
-1.029 when <em>age</em> increases by 1 unit.</p></li>
-<li><p>The odds of <em>income</em> being <em>&gt;50K</em> increases by
-1.031 when <em>hours_per_week</em> increases by 1 unit.</p></li>
-<li><p>The odds ratio for <em>income</em> being <em>&gt;50K</em>
-comparing males to females is 1.368.</p></li>
-<li><p>The odds ratio for <em>income</em> being <em>&gt;50K</em>
-comparing whites to non-whites is 1.324.</p></li>
-<li><p>The odds ratio for <em>income</em> being <em>&gt;50K</em>
-comparing each level of education to the base level,
-<em>Pre-school-12th</em>, is greater than 1.</p></li>
+<li><p>The odds of income being <code>&gt;50K</code> increases by 1.029
+when <code>age</code> increases by 1 unit.</p></li>
+<li><p>The odds of income being <code>&gt;50K</code> increases by 1.031
+when <code>hours_per_week</code> increases by 1 unit.</p></li>
+<li><p>The odds ratio for income being <code>&gt;50K</code> comparing
+males to females is 1.368.</p></li>
+<li><p>The odds ratio for income being <code>&gt;50K</code> comparing
+whites to non-whites is 1.324.</p></li>
+<li><p>The odds ratio for income being <code>&gt;50K</code> comparing
+each level of education to the base level, <code>Pre-school-12th</code>,
+is greater than 1.</p></li>
 </ul>
 </div>
 <div id="model-evaluation" class="section level2">
 <h2>Model Evaluation</h2>
-<p><em>Task 10: Determine the training and test accuracy scores for your
-model.</em></p>
-<p>We can use the <em>predict()</em> function to get the probability of
-an individual earning a <em>&gt;50K</em> income. If this probability is
-greater than 0.5, we assume that the individual earns a <em>&gt;50K</em>
-income. Otherwise, they earn a <em>&lt;=50K</em> income. We use the
-<em>confusionMatrix()</em> function from the <em>caret</em> package to
-compare the predicted income with the actual income values.</p>
+<p><strong>Task 10: Determine baseline accuracy</strong></p>
+<p>We set the baseline accuracy as the proportion of the majority class
+because a naïve model is highly likely to always predict this class.</p>
+<pre class="r"><code>round(nrow(train_data[train_data$income == &#39;&lt;=50K&#39;, ])/nrow(train_data), 2)</code></pre>
+<pre><code>[1] 0.76</code></pre>
+<p>So, the baseline accuracy score is 0.76. Because the dataset is
+slightly imbalanced, with approximately 76% of the data belonging to the
+“&lt;=50K” class, it’s better to use the balanced accuracy score to
+evaluate the performance of the logistic regression model. We explain
+how to calculate this and other evaluation metrics in <strong>Task
+11</strong>.</p>
+<p><strong>Task 11: Determine the training and test accuracies for the
+model.</strong></p>
+<p>We can use the <code>predict()</code> function to get the probability
+of an individual earning a <code>&gt;50K</code> income. If this
+probability is greater than 0.5, we assume that the individual earns a
+<code>&gt;50K</code> income. Otherwise, they earn a
+<code>&lt;=50K</code> income. We use the <code>confusionMatrix()</code>
+function from the <code>caret</code> package to compare the predicted
+income with the actual income.</p>
 <pre class="r"><code>prob &lt;- predict(model1, newdata = train_data, type = &quot;response&quot;)
 pred_income &lt;- as.factor(ifelse(prob &gt; 0.5, &quot;&gt;50K&quot;, &quot;&lt;=50K&quot;))
 confusionMatrix(pred_income, train_data$income)</code></pre>
@@ -2341,9 +2358,63 @@ Prediction &lt;=50K  &gt;50K
 <p>From the output above, we see that the train accuracy (0.8276) is
 better than the previously computed baseline accuracy, called the No
 Information Rate (0.7592) in the output.</p>
-<p>We can also evaluate the accuracy of the model on the test data. But
-we must first import the data and transform it the same way we
-transformed the training data.</p>
+<p>Other important statistics generated by
+<code>confusionMatrix()</code> are defined below <span class="citation">(Lee 2023)</span>:</p>
+<ul>
+<li><p>True positives (TP): the number of events the model correctly
+classifies as positive. In this case, TP = 22861.</p></li>
+<li><p>True negatives (TN): the number of events the model correctly
+classifies as negative. In this case, TN = 4088.</p></li>
+<li><p>False positives (FP): the number of events the model incorrectly
+classifies as positive. In this case, FP = 3753.</p></li>
+<li><p>False negatives (FN): the number of events the model incorrectly
+classifies as negative. In this case, FN = 1859.</p></li>
+<li><p>P-Value [Acc &gt; NIR]: the p value of a statistical test
+indicating whether the model’s accuracy is significantly better than the
+NIR.</p></li>
+<li><p>Kappa (also called Cohen’s kappa): a measure of how well the
+model’s predictions agree with actual values. It ranges from -1 to 1. A
+less than 0 value suggests an agreement worse than chance, and a greater
+than 0 value suggests an agreement better than chance.</p></li>
+<li><p>Mcnemar’s Test P-Value: the p value of a statistical test
+comparing the number of false positives to false negatives. A large p
+value suggests no significant difference between the two
+groups.</p></li>
+<li><p>Sensitivity (also called recall or true positive rate): the
+proportion of actual positive events correctly classified by the model.
+It is calculated as <span class="math inline">\(\frac{TP}{TP +
+FN}\)</span>.</p></li>
+<li><p>Specificity (also called true negative rate): the proportion of
+actual negative events correctly classified by the model. It is
+calculated as <span class="math inline">\(\frac{TN}{FP +
+TN}\)</span></p></li>
+<li><p>Positive predictive value (also called precision): the proportion
+of positive predictions that were true. It is calculated as <span class="math inline">\(\frac{TP}{TP + FP}\)</span>.</p></li>
+<li><p>Negative Predictive Value: the proportion of negative predictions
+that were true. It is calculated as <span class="math inline">\(\frac{TN}{TN + FN}\)</span>.</p></li>
+<li><p>Prevalence: the proportion of actually positive events in the
+dataset. It is the same as the “No Information Rate” also given in this
+output and calculated as <span class="math inline">\(\frac{TP + FN}{TP +
+FP + TN + FN}\)</span></p></li>
+<li><p>Detection Rate: the proportion of true positives in the dataset.
+It is calculated as <span class="math inline">\(\frac{TP}{TP + FP + TN +
+FN}\)</span>.</p></li>
+<li><p>Detection Prevalence: the proportion of events predicted as
+positive. It is calculated as <span class="math inline">\(\frac{TP +
+FP}{TP + FP + TN + FN}\)</span>.</p></li>
+<li><p>Balanced Accuracy: the average of specificity and
+sensitivity.</p></li>
+</ul>
+<p>As we’ve already mentioned, instead of using the standard accuracy
+score to evaluate the model’s performance, we can use the balanced
+accuracy, which is a more reliable measure of performance when dealing
+with imbalanced datasets. The balanced accuracy score for the baseline
+model is 0.5, while that for the logistic regression model is 0.7231.
+This result suggests that the model has learned meaningful patterns from
+the data and is not merely guessing the majority class.</p>
+<p>Next, we look at the model’s performance on the test data. But we
+must first import the data and transform it the same way we transformed
+the training data.</p>
 <pre class="r"><code># Read test data.
 # We skip the first line of the dataset (skip = 1) because it doesn’t
 # contain useful information.
@@ -2370,42 +2441,48 @@ names(test_data) &lt;- c(&quot;age&quot;, &quot;workclass&quot;, &quot;fnlwgt&qu
  $ income        : Factor w/ 2 levels &quot;&lt;=50K.&quot;,&quot;&gt;50K.&quot;: 1 1 2 2 1 1 1 2 1 1 ...</code></pre>
 <p>The dataset has 16281 observations and 15 variables. When we compare
 feature levels between the training and the test datasets, we see a
-match. Only the variables <em>workclass</em>, <em>occupation</em>, and
-<em>native_country</em> have missing values in both datasets, so we can
-use the same methods used to clean the training set to clean the test
-data. In addition, we should remove the dots in the test dataset’s
-income levels so they match the training dataset’s income levels.</p>
+match. Only the variables <code>workclass</code>,
+<code>occupation</code>, and <code>native_country</code> have missing
+values in both datasets, so we can use the same methods used to clean
+the training set to clean the test data. In addition, we should remove
+the dots in the test dataset’s income levels so they match the training
+dataset’s income levels.</p>
 <p>First, we get rid of all the variables we don’t need, i.e.,
-<em>capital_gain</em>, <em>capital_loss</em>, <em>native_country</em>,
-<em>education_num</em>, <em>fnlwgt</em>, and <em>relationship</em>.</p>
+<code>capital_gain</code>, <code>capital_loss</code>,
+<code>native_country</code>, <code>education_num</code>,
+<code>fnlwgt</code>, and <code>relationship</code>.</p>
 <pre class="r"><code>test_data$capital_gain &lt;- NULL
 test_data$capital_loss &lt;- NULL
 test_data$native_country &lt;- NULL 
 test_data$education_num &lt;- NULL
 test_data$fnlwgt &lt;- NULL
 test_data$relationship &lt;- NULL</code></pre>
-<p>Next, we use the <em>recode()</em> function from the <em>dplyr</em>
-package to recode missing values and lump predictor levels.</p>
-<p><em>Lump workclass levels</em></p>
+<p>Next, we use the <code>recode()</code> function from the
+<code>dplyr</code> package to recode missing values and lump predictor
+levels.</p>
+<p><strong>Lump <code>workclass</code> levels</strong></p>
 <pre class="r"><code>test_data$workclass &lt;- recode(test_data$workclass, &quot;?&quot; = &quot;Other/Missing&quot;, &quot;Federal-gov&quot; = &quot;Gov&quot;, &quot;Local-gov&quot; = &quot;Gov&quot;, &quot;Never-worked&quot; = &quot;Other/Missing&quot;, &quot;Self-emp-inc&quot; = &quot;Self-emp&quot;, &quot;Self-emp-not-inc&quot; = &quot;Self-emp&quot;, &quot;State-gov&quot; = &quot;Gov&quot;, &quot;Without-pay&quot; = &quot;Other/Missing&quot;)</code></pre>
 <p>Next, we make “Gov” the base level of the variable.</p>
 <pre class="r"><code>test_data$workclass &lt;- relevel(test_data$workclass, ref = &quot;Gov&quot;)</code></pre>
-<p><em>Lump education levels</em></p>
+<p><strong>Lump <code>education</code> levels</strong></p>
 <pre class="r"><code>test_data$education &lt;- recode(test_data$education, &quot;10th&quot; = &quot;Preschool-12th&quot;, &quot;11th&quot; = &quot;Preschool-12th&quot;, &quot;12th&quot; = &quot;Preschool-12th&quot;, &quot;1st-4th&quot; = &quot;Preschool-12th&quot;, &quot;5th-6th&quot; = &quot;Preschool-12th&quot;, &quot;7th-8th&quot; = &quot;Preschool-12th&quot;, &quot;9th&quot; = &quot;Preschool-12th&quot;, &quot;Assoc-acdm&quot; = &quot;Associate&quot;, &quot;Assoc-voc&quot; = &quot;Associate&quot;, &quot;Preschool&quot; = &quot;Preschool-12th&quot;)</code></pre>
-<p><em>Lump marital_status levels</em></p>
+<p><strong>Lump <code>marital_status</code> levels</strong></p>
 <pre class="r"><code>test_data$marital_status &lt;- recode(test_data$marital_status, &quot;Married-AF-spouse&quot; = &quot;Married&quot;, &quot;Married-civ-spouse&quot; = &quot;Married&quot;, &quot;Married-spouse-absent&quot; = &quot;Married&quot;)</code></pre>
-<p><em>Lump occupation levels</em></p>
+<p><strong>Lump <code>occupation</code> levels</strong></p>
 <pre class="r"><code>test_data$occupation &lt;- recode(test_data$occupation, &quot;Protective-serv&quot; = &quot;Service-sales-workers&quot;, &quot;Sales&quot; = &quot;Service-sales-workers&quot;, &quot;Priv-house-serv&quot; = &quot;Service-sales-workers&quot;, &quot;Other-service&quot; = &quot;Service-sales-workers&quot;, &quot;Exec-managerial&quot; = &quot;Managers&quot;, &quot;Prof-specialty&quot; = &quot;Professionals&quot;, &quot;Tech-support&quot; = &quot;Technical&quot;, &quot;Adm-clerical&quot; = &quot;Clerical&quot;, &quot;Machine-op-inspct&quot; = &quot;Labor-trades&quot;, &quot;Handlers-cleaners&quot; = &quot;Labor-trades&quot;, &quot;Farming-fishing&quot; = &quot;Labor-trades&quot;, &quot;Craft-repair&quot; = &quot;Labor-trades&quot;, &quot;Transport-moving&quot; = &quot;Labor-trades&quot;, &quot;Armed-Forces&quot; = &quot;Other/Missing&quot;, &quot;?&quot; = &quot;Other/Missing&quot;)</code></pre>
-<p>Next, we reorder occupation levels to make <em>Clerical</em> the base
-level.</p>
+<p>Next, we reorder occupation levels to make <code>Clerical</code> the
+base level.</p>
 <pre class="r"><code>test_data$occupation &lt;- relevel(test_data$occupation, ref = &quot;Clerical&quot;)</code></pre>
-<p><em>Lump race levels</em></p>
+<p><strong>Lump <code>race</code> levels</strong></p>
 <pre class="r"><code>test_data$race &lt;- recode(test_data$race, &quot;Amer-Indian-Eskimo&quot; = &quot;Non-white&quot;, &quot;Asian-Pac-Islander&quot; = &quot;Non-white&quot;, &quot;Black&quot; = &quot;Non-white&quot;, &quot;Other&quot; = &quot;Non-white&quot;)</code></pre>
-<p>We also use the recode() function to rename the income levels.</p>
+<p><strong>Clean <code>income</code> levels</strong></p>
+<p>We remove the dots in <code>income</code> level names, as shown
+below.</p>
 <pre class="r"><code>test_data$income &lt;- recode(test_data$income, &quot;&lt;=50K.&quot; = &quot;&lt;=50K&quot;, &quot;&gt;50K.&quot; = &quot;&gt;50K&quot;)</code></pre>
-<p>Having cleaned the test dataset, we first use <em>model1</em> and the
-<em>predict()</em> function to predict the test set. We then use
-<em>confusionMatrix()</em> to compute the test accuracy score.</p>
+<p>Having cleaned the test dataset, we can now use the
+<code>predict()</code> function to make predictions on the test set. We
+then use <code>confusionMatrix()</code> to compute the test accuracy
+score and other metrics.</p>
 <pre class="r"><code>prob_test &lt;- predict(model1, newdata = test_data, type = &quot;response&quot;)
 pred_income_test &lt;- as.factor(ifelse(prob_test &gt; 0.5, &quot;&gt;50K&quot;, &quot;&lt;=50K&quot;))
 confusionMatrix(pred_income_test, test_data$income)</code></pre>
@@ -2437,8 +2514,10 @@ Prediction &lt;=50K  &gt;50K
        &#39;Positive&#39; Class : &lt;=50K          
                                          </code></pre>
 <p>From the output above, we see that the test accuracy is 0.83, which
-is slightly better than the train accuracy. So, we can conclude that the
-model will probably generalize well.</p>
+is slightly better than the train accuracy. Also, the test balanced
+accuracy (0.7248) is slightly higher than the training balanced accuracy
+(0.7231). So, we can conclude that the model probably generalizes well
+on new data.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
@@ -2449,11 +2528,15 @@ Becker, Barry, and Ronny Kohavi. 1996.
 </div>
 <div id="ref-boehmke2019" class="csl-entry">
 Boehmke, Brad, and Brandon M. Greenwell. 2019. <em>Hands-on Machine
-Learning with r</em>. New York: CRC Press.
+Learning with <span>R</span></em>. New York: CRC Press.
+</div>
+<div id="ref-Lee2025" class="csl-entry">
+Lee, Changjun. 2023. <span>“Understanding the Confusion Matrix and ROC
+Curve in <span>R</span>.”</span> <a href="https://changjunlee.com/blogs/posts/4_confusion_mat_and_roc" class="uri">https://changjunlee.com/blogs/posts/4_confusion_mat_and_roc</a>.
 </div>
 <div id="ref-uclalogit" class="csl-entry">
-UCLA: Statistical Consulting Group. n.d. <span>“Logit Regression | r
-Data Analysis Examples.”</span> <a href="https://stats.oarc.ucla.edu/r/dae/logit-regression/">https://stats.oarc.ucla.edu/r/dae/logit-regression/</a>.
+UCLA: Statistical Consulting Group. n.d. <span>“Logit Regression |
+<span>R</span> Data Analysis Examples.”</span> <a href="https://stats.oarc.ucla.edu/r/dae/logit-regression/">https://stats.oarc.ucla.edu/r/dae/logit-regression/</a>.
 </div>
 </div>
 </div>

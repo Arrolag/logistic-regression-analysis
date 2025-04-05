@@ -62,7 +62,7 @@ The Adult dataset [@adult_2], accessible from the [UCI Machine Learning Reposito
     </tr>
     <tr>
       <td>fnlwgt</td>
-      <td>Final weight, i.e., the number of people in a given row    </td>
+      <td>Final weight, i.e., the number of people in a given row</td>
     </tr>
     <tr>
       <td>education</td>
@@ -115,12 +115,14 @@ The Adult dataset [@adult_2], accessible from the [UCI Machine Learning Reposito
   </tbody>
 </table>
 <p style="font-weight: bold; text-indent: 30px;">Table 1: Description of Adult dataset variables.</p>
-<p></p>
 
+<br>
 
 **Objective:** Use logistic regression to build a model that predicts a person’s income group, categorized as <=50K or >50K. 
 
-As we have already downloaded the data, we load it in R using the code below. The dataset consists of two parts: the training set, *adult.data*, and the test set, *adult.test*. We start by loading the training set, which is vital for exploration exercises.
+<br>
+
+As we have already downloaded the data, we load it in R using the code below. The dataset consists of two parts: the training set, `adult.data`, and the test set, `adult.test`. We start by loading the training set, which is vital for exploration exercises.
 
 
 ```{r, comment=NA}
@@ -157,21 +159,21 @@ library(dplyr)
 
 **Task 2: Determine the internal structure of the dataset.**
 
-We use the *str()* function to gain an overview of the dataset. This function provides information on dataset properties like dimension and data types. 
+We use the `str()` function to gain an overview of the dataset. This function provides information on dataset properties like dimension and data types. 
 
 ```{r, comment=NA}
 str(train_data)
 ```
 
-The output from the str() function shows that the training dataset has 32,561 observations and 15 variables. Our target variable is income, which has two categories <=50K and >50K. Therefore, we can use logistic regression to build a binary classification model.
+The output from `str()` shows that the training dataset has 32,561 observations and 15 variables. Our target variable is income, which has two categories <=50K and >50K. Therefore, we can use logistic regression to build a binary classification model.
 
 
-We also notice that the factor variables *workclass*, *occupation*, and *native_country* include levels denoted by a “?”. Upon examining the Variables Table provided at the UCI Machine Learning Repository within the Dataset Information section, we find that these columns have missing values. We conclude that the “?” symbol represents missing data. 
+We also notice that the factor variables `workclass`, `occupation`, and `native_country` include levels denoted by a “?”. Upon examining the Variables Table provided at the UCI Machine Learning Repository within the Dataset Information section, we find that these columns have missing values. We conclude that the “?” symbol represents missing data. 
 
 
 **Task 3: Handle missing data**
 
-The presence of missing data in a regression model can significantly impair the model’s accuracy in predicting responses. In this task, we examine the proportion of missing values in the *workclass*, *occupation*, and *native_country* columns of the training data.
+The presence of missing data in a regression model can significantly impair the model’s accuracy in predicting responses. In this task, we examine the proportion of missing values in the `workclass`, `occupation`, and `native_country` columns of the training data.
 
 ```{r, comment=NA}
 # Percentage of missing values in workclass
@@ -183,7 +185,7 @@ nrow(train_data[train_data$native_country == '?', ]) * 100/nrow(train_data)
 ```
 
 
-We find that the highest percentage of missing values occurs in the *workclass* and *occupation* variables, with about 5% of the training data missing in each case. As we’d like to retain these missing values, we recode them as “Missing”, creating an additional category for each variable. 
+We find that the highest percentage of missing values occurs in the `workclass` and `occupation` variables, with about 5% of the training data missing in each case. As we’d like to retain these missing values, we recode them as "Missing”, creating an additional category for each variable. 
 
 ```{r, comment=NA, message=FALSE}
 train_data$workclass <- recode(train_data$workclass, "?" = "Missing")
@@ -193,7 +195,7 @@ train_data$native_country <- recode(train_data$native_country, "?" = "Missing")
 
 **Task 4: Discard zero-variance and near-zero variance independent variables.**
 
-A zero-variance variable has only one unique value, while a near-zero-variance variable has very few unique values. These variables are also termed low cardinality variables, where cardinality refers to the number of unique values a variable has. Because they contain little information, they are unimportant to the analysis [@boehmke2019]. We use the *nearZeroVar()* function from the *caret* package to identify these variables in the training data. 
+A zero-variance variable has only one unique value, while a near-zero-variance variable has very few unique values. These variables are also termed low cardinality variables, where cardinality refers to the number of unique values a variable has. Because they contain little information, they are unimportant to the analysis [@boehmke2019]. We use the `nearZeroVar()` function from the `caret` package to identify these variables in the training data. 
 
 
 ```{r, comment=NA, message=FALSE}
@@ -202,7 +204,7 @@ X
 ```
 
 
-From the above output, the training data has no zero-variance variables but contains several near-zero-variance variables, namely, *capital_gain*, *capital_loss*, and *native_country*. We use histograms to explore *capital_gain* and *capital_loss* further.
+From the above output, the training data has no zero-variance variables but contains several near-zero-variance variables, namely, `capital_gain`, `capital_loss`, and `native_country`. We use histograms to explore `capital_gain` and `capital_loss` further.
 
 ```{r, comment=NA, message=FALSE}
 # Remove scientific notation
@@ -219,9 +221,9 @@ plot_grid(cg_plot, cl_plot, labels = c('A', 'B'), label_size = 12)
 ```
 <p style="font-weight: bold; text-indent: 30px;">Figure 1: Histograms of A) capital_gain and B) capital_loss.</p> 
 
-Figure 1 reveals that the distributions of *capital_gain* and *capital_loss* are strongly skewed to the right, with most observations being zero. Therefore, we discard these two variables. 
+Figure 1 reveals that the distributions of `capital_gain` and `capital_loss` are strongly skewed to the right, with most observations being zero. Therefore, we discard these two variables. 
 
-In addition, the frequency distribution of *native_country* shown below indicates that almost 90% (29170/32561) of all entries fall within the *United-States* category. Because of this heavy skewness, we exclude this variable from our analysis. 
+In addition, the frequency distribution of `native_country` shown below indicates that almost 90% (29170/32561) of all entries fall within the `United-States` category. Because of this heavy skewness, we exclude this variable from our analysis. 
 
 
 ```{r, comment=NA}
@@ -234,9 +236,10 @@ train_data$native_country <- NULL
 ```
 
 
-**Task 5: Discard closely related (collinear) independent variables.**
+**Task 5: Discard closely related independent variables.**
 
-Two or more variables are considered collinear when they are so strongly correlated that it is difficult to determine their individual effects on the target variable. In the training dataset, *education* and *education_num* are collinear, as *education_num* is simply a numeric representation of *education*. The two variables contain the same information, so we discard one, i.e., *education_num*.
+Two variables are considered collinear when they are so strongly correlated that it is difficult to determine their individual effects on the target variable. When this type of relationship occurs between more than two variables, we refer to it as multicollinearity. 
+In the training dataset, `education` and `education_num` are collinear, as `education_num` is simply a numeric representation of `education`. The two variables contain the same information, so we discard one, i.e., `education_num`.
 
 ```{r, comment=NA}
 # Drop one of a pair of collinear variables
@@ -246,7 +249,7 @@ train_data$education_num <- NULL
 
 **Task 6: Discard variables that aren’t important to the analysis.**
 
-Here, we discard *fnlwgt* and *relationship*. 
+Here, we discard `fnlwgt` and `relationship`. 
 
 ```{r, comment=NA}
 # Drop irrelevant variables
@@ -256,12 +259,12 @@ train_data$relationship <- NULL
 
 **Task 7: Lump levels of independent categorical features with few observations.**
 
-The independent categorical variables in the dataset are *workclass*, *education*, *marital_status*, *occupation*, *race*, and *sex*.
+The independent categorical variables in the dataset are `workclass`, `education`, `marital_status`, `occupation`, `race`, and `sex`.
 We explore each of these variables to determine instances where level lumping can be applied to reduce the noise in the data. 
 
-**Lump *workclass* levels**
+**Lump `workclass` levels**
 
-We use a barplot to compare the number of people belonging to each *workclass* level.
+We use a barplot to compare the number of people belonging to each `workclass` level.
 
 ```{r, comment=NA}
 # Barplot of workclass
@@ -272,7 +275,7 @@ wc_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 2: Barplot showing the distribution of people by workclass.</p> 
 
 
-Figure 2 shows that the two levels, *Without-pay* and *Never-worked* have very few observations. So, we lump them together with the Missing in a level called “Other/Missing”. We also lump *State-gov*, *Local-gov*,* and *Federal-gov* into a new level called “Gov,” as they all pertain to government-related work. *Self-emp-not-inc* and *Self-emp-inc* are consolidated into a new level called “Self-emp,” as both are related to self-employment. 
+Figure 2 shows that the two levels, `Without-pay` and `Never-worked` have very few observations. So, we lump them together with the Missing in a level called “Other/Missing”. We also lump `State-gov`, `Local-gov`, and `Federal-gov` into a new level called “Gov,” as they all pertain to government-related work. `Self-emp-not-inc` and `Self-emp-inc` are consolidated into a new level called “Self-emp,” as both are related to self-employment. 
 
 ```{r, comment=NA}
 # Change names of workclass levels
@@ -282,16 +285,16 @@ train_data$workclass <- recode(train_data$workclass, "Missing" = "Other/Missing"
 table(train_data$workclass)
 ```
 
-We want the first (base) level of *workclass* to be a meaningful quantity that can later help with interpreting regression results. So, we use the *relevel()* function to reorder these levels, removing “Other/Missing” as the base level. 
+We want the first (base) level of `workclass` to be a meaningful quantity that can later help with interpreting regression results. So, we use the `relevel()` function to reorder these levels, removing “Other/Missing” as the base level. 
 
 ```{r, comment=NA}
 train_data$workclass <- relevel(train_data$workclass, ref = "Gov")
 ```
 
 
-**Lump *education* levels**
+**Lump `education` levels**
 
-The barplot in Figure 3 explores the distribution of people by education. Here is the code used to create this plot:
+The barplot in Figure 3 explores the distribution of people by `education`. Here is the code used to create this plot:
 
 ```{r, comment=NA}
 # Barplot of education
@@ -302,7 +305,7 @@ ed_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 3: Barplot showing the distribution of people by education.</p> 
 
 
-We see that all levels from *Preschool* to *12th grade* have somewhat low frequencies. So, we lump these levels into a new category called *Preschool-12th*. We also merge *Assoc-voc* and *Assoc-acdm* into a single level called *Associate*, as shown in the code below.
+We see that all levels from `Preschool` to `12th grade` have somewhat low frequencies. So, we lump these levels into a new category called `Preschool-12th`. We also merge `Assoc-voc` and `Assoc-acdm` into a single level called `Associate`, as shown in the code below.
 
 ```{r, comment=NA}
 # Recode education levels
@@ -311,9 +314,9 @@ train_data$education <- recode(train_data$education, "10th" = "Preschool-12th", 
 table(train_data$education)
 ```
 
-**Lump *marital_status* levels**
+**Lump `marital_status` levels**
 
-The barplot in Figure 4 explores the distribution of people by *marital_status*.
+The barplot in Figure 4 explores the distribution of people by `marital_status`.
 
 ```{r, comment=NA}
 # Barplot of marital_status
@@ -324,7 +327,7 @@ ms_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 4: Barplot showing the distribution of people by marital_status.</p> 
 
 
-We lump *Married-spouse-absent*, *Married-civ-spouse*, and *Married-AF-spouse* into a level called “Married”, as they all denote married people. By doing so, we reduce the number of levels in this variable to 5. 
+We lump `Married-spouse-absent`, `Married-civ-spouse`, and `Married-AF-spouse` into a level called “Married”, as they all denote married people. By doing so, we reduce the number of levels in this variable to 5. 
 
 ```{r, comment=NA}
 # Recode marital_status levels
@@ -333,7 +336,7 @@ train_data$marital_status <- recode(train_data$marital_status, "Married-AF-spous
 table(train_data$marital_status)
 ```
 
-**Lump *occupation* levels**
+**Lump `occupation` levels**
 
 The barplot in Figure 5 illustrates the counts of people in each level of occupation. Here is the code used to create this plot.
 
@@ -362,16 +365,16 @@ train_data$occupation <- recode(train_data$occupation, "Protective-serv" = "Serv
 table(train_data$occupation)
 ```
 
-We also reorder the levels of occupation so that the first level is *Clerical*, a more meaningful quantity than *Other/Missing*.
+We also reorder the levels of occupation so that the first level is `Clerical`, a more meaningful quantity than `Other/Missing`.
 
 ```{r, comment=NA}
 train_data$occupation <- relevel(train_data$occupation, ref = "Clerical")
 ```
 
 
-**Lump *race* levels**
+**Lump `race` levels**
 
-The barplot in Figure 6 shows the counts of people by race. Here is the code used to create it:
+The barplot in Figure 6 shows the counts of people by `race`. Here is the code used to create it:
 
 ```{r, comment=NA}
 r_plot <- ggplot(data = train_data, aes(x = race)) + geom_bar(fill="steelblue") + labs(x = "Race", y = "Count") + theme(axis.title = element_text(family = "Arial")) + theme_cowplot(12) + coord_flip()
@@ -381,7 +384,7 @@ r_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 6: Barplot showing distribution of people by race.</p>
 
 
-We see that more than 20000 people are white, and the next most populous race is black, with less than 5000 people. To simplify our analysis, we regroup race into two levels, *White* and *Non-white*.
+We see that more than 20000 people are white, and the next most populous race is black, with less than 5000 people. To simplify our analysis, we regroup race into two levels, `White` and `Non-white`.
 
 ```{r, comment=NA}
 # Recode race levels
@@ -391,9 +394,9 @@ table(train_data$race)
 ```
 
 
-**Lump *sex* levels**
+**Lump `sex` levels**
 
-Figure 7 shows the number of people in each level of sex. Here is the code used to create it:
+Figure 7 shows the number of people in each level of `sex`. Here is the code used to create it:
 
 ```{r, comment=NA}
 s_plot <- ggplot(data = train_data, aes(x = sex)) + geom_bar(fill="steelblue") + labs(x = "Sex", y = "Count") + theme(axis.title = element_text(family = "Arial")) + theme_cowplot(12) + coord_flip()
@@ -403,7 +406,7 @@ s_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 7: Barplot showing the distribution of people by sex.</p>
 
 
-We see that most people in the data are male. As sex only has two levels, both of which are important to the analysis, we don’t do any lumping here. 
+We see that most people in the data are male. As `sex` only has two levels, both of which are important to the analysis, we don’t do any lumping here. 
 
 **Task 8: Study the relationship between income and each of the independent variables.**
 
@@ -411,7 +414,7 @@ Before we build our model, we want to see if there are specific differences betw
 
 **Income vs. Age**
 
-We use a histogram to determine the relationship between *age* and *income*.
+We use a histogram to determine the relationship between `age` and `income`.
 
 ```{r, comment=NA}
 age_plot <- ggplot(train_data, aes(x = age, fill = income)) +
@@ -422,11 +425,11 @@ age_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 8: Histogram showing the distribution of income by age.</p>
 
 
-Figure 8 shows that more people have incomes of *<=50K* than of *>50K*. The minimum age for people with incomes *<=50K* is slightly less than that for people of the other income group. Also, the distribution of ages in the *<=50K* group is heavily skewed to the right, suggesting that the mean age of this group is higher than the median age.
+Figure 8 shows that more people have incomes of `<=50K` than of `>50K`. The minimum age for people with incomes `<=50K` is slightly less than that for people of the other income group. Also, the distribution of ages in the `<=50K` group is heavily skewed to the right, suggesting that the mean age of this group is higher than the median age.
 
 **Income Vs. workclass**
 
-Here is the code used to create the proportional stacked barplot in Figure 9, showing the relationship between *workclass* and *income*:
+Here is the code used to create the proportional stacked barplot in Figure 9, showing the relationship between `workclass` and `income`:
 
 ```{r, comment=NA}
 wc_plot2 <- ggplot(data = train_data, aes(x = workclass, fill = income)) + geom_bar(position = "fill") + scale_fill_manual(values = c("#f0b27a", "#85c1e9")) + labs(x = "Work Class", y = "Proportion", fill = "Income") + theme(axis.title = element_text(family = "Arial")) + theme_cowplot(12)
@@ -436,7 +439,7 @@ wc_plot2
 <p style="font-weight: bold; text-indent: 30px;">Figure 9: Barplot showing the distribution of income by workclass.</p>
 
 
-From the barplot, we see that the *workclass* with the highest proportion of *>50K* income earners is *Self-emp*, while that with the smallest proportion of this group of earners is *Other/Missing*. 
+From the barplot, we see that the `workclass` with the highest proportion of `>50K` income earners is `Self-emp`, while that with the smallest proportion of this group of earners is `Other/Missing`. 
 
 **Income Vs. Education**
 
@@ -450,7 +453,7 @@ ed_plot2
 <p style="font-weight: bold; text-indent: 30px;">Figure 10: Barplot showing the distribution of income by education.</p>
 
 
-The barplot reveals that the *Prof-school* and *Doctorate* levels of education have the highest proportions of people with an annual income *>50K*. Also, the proportion of *>50K* income earners appears to increase with an increase in the level of education.  
+The barplot reveals that the `Prof-school` and `Doctorate` levels of education have the highest proportions of people with an annual income `>50K`. Also, the proportion of `>50K` income earners appears to increase with an increase in the level of education.  
 
 **Income Vs. Marital Status**
 
@@ -464,7 +467,7 @@ ms_plot2
 <p style="font-weight: bold; text-indent: 30px;">Figure 11: Barplot showing the distribution of income by marital_status.</p>
 
 
-The barplot shows that the highest proportion of *>50K* income earners are found in the *Married* group, followed by the *Divorced*, *Widowed*, *Separated*, and *Never-married* groups, in that order. 
+The barplot shows that the highest proportion of `>50K` income earners are found in the `Married` group, followed by the `Divorced`, `Widowed`, `Separated`, and `Never-married` groups, in that order. 
 
 **Income Vs. Occupation**
 
@@ -478,7 +481,7 @@ oc_plot2
 <p style="font-weight: bold; text-indent: 30px;">Figure 12: Barplot showing the distribution of income by occupation.</p>
 
 
-From the barplot, we see that the highest proportion of *>50K* income earners are found in the *Managers* group, followed by the *Professionals* and *Technical* groups. The *Other/Missing* group has the lowest proportion of *>50K* income earners.  
+From the barplot, we see that the highest proportion of `>50K` income earners are found in the `Managers` group, followed by the `Professionals` and `Technical` groups. The `Other/Missing` group has the lowest proportion of `>50K` income earners.  
 
 **Income Vs. Race**
 
@@ -492,11 +495,11 @@ r_plot2
 <p style="font-weight: bold; text-indent: 30px;">Figure 13: Barplot showing the distribution of income by race.</p>
 
 
-The barplot shows that the *White* group has a larger proportion of *>50K* income earners than the *Non-white* group. 
+The barplot shows that the `White` group has a larger proportion of `>50K` income earners than the `Non-white` group. 
 
 **Income Vs. Hours/Week**
 
-We use the code below to plot the histogram in Figure 14, showing the relationship between income and hours_per_week. 
+We use the code below to plot the histogram in Figure 14, showing the relationship between `income` and `hours_per_week`. 
 
 ```{r, comment=NA}
 hpw_plot <- ggplot(train_data, aes(x = hours_per_week, fill = income)) +
@@ -507,21 +510,13 @@ hpw_plot
 <p style="font-weight: bold; text-indent: 30px;">Figure 14: Histogram showing the distribution of income by hours_per_week.</p>
 
 
-From the histogram, we see that most people in the training data work about 40 hours/week. A large proportion of those who work less than 40 hours/week are <=50K income earners. However, looking at the distribution of the >50K income earners, the bars to the right of the 40 hours/week are longer than those to the left, meaning that many people in this income group work more than 40 hours/week. 
+From the histogram, we see that most people in the training data work about 40 hours/week. A large proportion of those who work less than 40 hours/week are `<=50K` income earners. However, looking at the distribution of the `>50K` income earners, the bars to the right of the 40 hours/week are longer than those to the left, meaning that many people in this income group work more than 40 hours/week. 
 
 ## Build Model
 
 **Task 9: Build a binary logistic regression model.**
 
-First, we calculate a baseline accuracy score for the model. This score is typically the proportion of the majority class, as a naïve model is highly likely to always predict this class. 
-
-```{r, comment=NA}
-round(nrow(train_data[train_data$income == '<=50K', ])/nrow(train_data), 2)
-```
-
-So, the baseline accuracy score is 0.76.
-
-Next, we use the *glm()* function to build a model that predicts income group based on the variables *age*, *workclass*, *education*, *marital_status*, *occupation*, *race*, *sex*, and *hours_per_week*. 
+We use the `glm()` function to build a model that predicts income group based on the variables `age`, `workclass`, `education`, `marital_status`, `occupation`, `race`, `sex`, and `hours_per_week`. 
 
 ```{r, comment=NA, message=FALSE}
 options(scipen=0)
@@ -536,23 +531,23 @@ $$\ln(\frac{\rho}{1-\rho}) = \beta_{0} + \beta_{1}X_{1} + \cdots + \beta_{p}X_{p
 
 where $X_1, \cdots, X_p$ are the predictor variables, $β_0, \cdots ,β_p$ are the regression coefficients, $\rho$ is the probability of success, i.e., the probability of obtaining a particular value of the target variable, and $\frac{\rho}{1-\rho}$ is the odds for success. 
 
-The target, income, is a factor with two levels “<=50K” and “>50K”. R interprets the first level, “<=50K”, as failure and the second level, “>50K”, as success. For more information on how the *glm()* function handles the levels of factor variables, use the command *?glm* to access the function's documentation pages.
+The target, income, is a factor with two levels `<=50K` and `>50K`. R interprets the first level, `<=50K`, as failure and the second level, `>50K`, as success. For more information on how the `glm()` function handles the levels of factor variables, use the command `?glm` to access the function's documentation pages.
 
 For a continuous predictor, the regression coefficient gives the change in the log odds for success when the predictor increases by 1 unit. We can also say that the regression coefficient is the log of the odds ratio comparing people who differ in that predictor by 1 unit, when the remaining predictors are held fixed [@uclalogit]. For example, from the regression output above,
 
-+ A 1 unit increase in age should result in a 0.029 increase in the log odds of income being >50K.
++ A 1 unit increase in `age` should result in a 0.029 increase in the log odds of income being `>50K`.
 	
-+ A 1 unit increase in hours_per_week should result in a 0.030 increase in the log odds of income being >50K.
++ A 1 unit increase in `hours_per_week` should result in a 0.030 increase in the log odds of income being `>50K`.
 
 By contrast, the regression coefficient for a level of a categorical predictor gives the log of the odds ratio comparing people at the given level to those at the base level, when other predictors are held fixed. So, it is crucial for the base level to be a meaningful quantity. 
 
 From the regression output above, we can say that 
 
-+ The log of the odds ratio for *income* being *>50K* comparing *males* to *females* is 0.313.
++ The log of the odds ratio for income being `>50K` comparing `males` to `females` is 0.313.
 
-+ The log of the odds ratio for *income* being *>50K* comparing *whites* to *non-whites* is 0.281.
++ The log of the odds ratio for income being `>50K` comparing `whites` to `non-whites` is 0.281.
 
-+ The log of the odds ratio for *income* being *>50K* comparing each level of education to the base level, *Pre-school-12th*, is greater than 1
++ The log of the odds ratio for income being `>50K` comparing each level of education to the base level, `Pre-school-12th`, is greater than 1
 
 We can also exponentiate the regression coefficients to give odd ratios. Here is the code:
 
@@ -562,21 +557,32 @@ exp(coef(model1))
 
 From the output above, we can now say that
 
-+ The odds of *income* being *>50K* increases by 1.029 when *age* increases by 1 unit.
++ The odds of income being `>50K` increases by 1.029 when `age` increases by 1 unit.
 
-+ The odds of *income* being *>50K* increases by 1.031 when *hours_per_week* increases by 1 unit.
++ The odds of income being `>50K` increases by 1.031 when `hours_per_week` increases by 1 unit.
 
-+ The odds ratio for *income* being *>50K* comparing males to females is 1.368.
++ The odds ratio for income being `>50K` comparing males to females is 1.368.
 
-+ The odds ratio for *income* being *>50K* comparing whites to non-whites is 1.324.
++ The odds ratio for income being `>50K` comparing whites to non-whites is 1.324.
 
-+ The odds ratio for *income* being *>50K* comparing each level of education to the base level, *Pre-school-12th*, is greater than 1.
++ The odds ratio for income being `>50K` comparing each level of education to the base level, `Pre-school-12th`, is greater than 1.
 
 ## Model Evaluation
 
-*Task 10: Determine the training and test accuracy scores for your model.*
+**Task 10: Determine baseline accuracy**
 
-We can use the *predict()* function to get the probability of an individual earning a *>50K* income. If this probability is greater than 0.5, we assume that the individual earns a *>50K* income. Otherwise, they earn a *<=50K* income. We use the *confusionMatrix()* function from the *caret* package to compare the predicted income with the actual income values.
+We set the baseline accuracy as the proportion of the majority class because a naïve model is highly likely to always predict this class. 
+
+```{r, comment=NA}
+round(nrow(train_data[train_data$income == '<=50K', ])/nrow(train_data), 2)
+```
+
+So, the baseline accuracy score is 0.76. Because the dataset is slightly imbalanced, with approximately 76% of the data belonging to the "<=50K" class, it's better to use the balanced accuracy score to evaluate the performance of the logistic regression model. We explain how to calculate this and other evaluation metrics in **Task 11**.
+
+
+**Task 11: Determine the training and test accuracies for the model.**
+
+We can use the `predict()` function to get the probability of an individual earning a `>50K` income. If this probability is greater than 0.5, we assume that the individual earns a `>50K` income. Otherwise, they earn a `<=50K` income. We use the `confusionMatrix()` function from the `caret` package to compare the predicted income with the actual income.
 
 ```{r, comment=NA}
 prob <- predict(model1, newdata = train_data, type = "response")
@@ -587,7 +593,42 @@ confusionMatrix(pred_income, train_data$income)
 
 From the output above, we see that the train accuracy (0.8276) is better than the previously computed baseline accuracy, called the No Information Rate (0.7592) in the output. 
 
-We can also evaluate the accuracy of the model on the test data. But we must first import the data and transform it the same way we transformed the training data. 
+Other important statistics generated by `confusionMatrix()` are defined below [@Lee2025]:
+
++ True positives (TP): the number of events the model correctly classifies as positive. In this case, TP = 22861.
+
++ True negatives (TN): the number of events the model correctly classifies as negative. In this case, TN = 4088.
+
++ False positives (FP): the number of events the model incorrectly classifies as positive. In this case, FP =  3753.
+
++ False negatives (FN): the number of events the model incorrectly classifies as negative. In this case, FN = 1859.
+
++ P-Value [Acc > NIR]: the p value of a statistical test indicating whether the model's accuracy is significantly better than the NIR.
+
++ Kappa (also called Cohen's kappa): a measure of how well the model's predictions agree with actual values. It ranges from -1 to 1. A less than 0 value suggests an agreement worse than chance, and a greater than 0 value suggests an agreement better than chance. 
+
++ Mcnemar's Test P-Value: the p value of a statistical test comparing the number of false positives to false negatives. A large p value suggests no significant difference between the two groups.
+
++ Sensitivity (also called recall or true positive rate): the proportion of actual positive events correctly classified by the model. It is calculated as $\frac{TP}{TP + FN}$.
+
++ Specificity (also called true negative rate): the proportion of actual negative events correctly classified by the model. It is calculated as $\frac{TN}{FP + TN}$ 
+
++ Positive predictive value (also called precision): the proportion of positive predictions that were true. It is calculated as $\frac{TP}{TP + FP}$.
+
++ Negative Predictive Value: the proportion of negative predictions that were true. It is calculated as $\frac{TN}{TN + FN}$. 
+
++ Prevalence: the proportion of actually positive events in the dataset. It is the same as the "No Information Rate" also given in this output and calculated as $\frac{TP + FN}{TP + FP + TN + FN}$
+
++ Detection Rate: the proportion of true positives in the dataset. It is calculated as $\frac{TP}{TP + FP + TN + FN}$.
+
++ Detection Prevalence: the proportion of events predicted as positive. It is calculated as $\frac{TP + FP}{TP + FP + TN + FN}$.
+
++ Balanced Accuracy: the average of specificity and sensitivity.
+
+As we've already mentioned, instead of using the standard accuracy score to evaluate the model's performance, we can use the balanced accuracy, which is a more reliable measure of performance when dealing with imbalanced datasets. 
+The balanced accuracy score for the baseline model is 0.5, while that for the logistic regression model is 0.7231. This result suggests that the model has learned meaningful patterns from the data and is not merely guessing the majority class.
+
+Next, we look at the model's performance on the test data. But we must first import the data and transform it the same way we transformed the training data. 
 
 
 ```{r, comment=NA}
@@ -607,9 +648,9 @@ Get an overview of the test data:
 str(test_data)
 ```
 
-The dataset has 16281 observations and 15 variables. When we compare feature levels between the training and the test datasets, we see a match. Only the variables *workclass*, *occupation*, and *native_country* have missing values in both datasets, so we can use the same methods used to clean the training set to clean the test data. In addition, we should remove the dots in the test dataset’s income levels so they match the training dataset’s income levels. 
+The dataset has 16281 observations and 15 variables. When we compare feature levels between the training and the test datasets, we see a match. Only the variables `workclass`, `occupation`, and `native_country` have missing values in both datasets, so we can use the same methods used to clean the training set to clean the test data. In addition, we should remove the dots in the test dataset’s income levels so they match the training dataset’s income levels. 
 
-First, we get rid of all the variables we don’t need, i.e., *capital_gain*, *capital_loss*, *native_country*, *education_num*, *fnlwgt*, and *relationship*. 
+First, we get rid of all the variables we don’t need, i.e., `capital_gain`, `capital_loss`, `native_country`, `education_num`, `fnlwgt`, and `relationship`. 
 
 ```{r, comment=NA}
 test_data$capital_gain <- NULL
@@ -620,9 +661,9 @@ test_data$fnlwgt <- NULL
 test_data$relationship <- NULL
 ```
 
-Next, we use the *recode()* function from the *dplyr* package to recode missing values and lump predictor levels. 
+Next, we use the `recode()` function from the `dplyr` package to recode missing values and lump predictor levels. 
 
-*Lump workclass levels*
+**Lump `workclass` levels**
 
 ```{r, comment=NA}
 test_data$workclass <- recode(test_data$workclass, "?" = "Other/Missing", "Federal-gov" = "Gov", "Local-gov" = "Gov", "Never-worked" = "Other/Missing", "Self-emp-inc" = "Self-emp", "Self-emp-not-inc" = "Self-emp", "State-gov" = "Gov", "Without-pay" = "Other/Missing")
@@ -634,45 +675,47 @@ Next, we make “Gov” the base level of the variable.
 test_data$workclass <- relevel(test_data$workclass, ref = "Gov")
 ```
 
-*Lump education levels*
+**Lump `education` levels**
 
 
 ```{r, comment=NA}
 test_data$education <- recode(test_data$education, "10th" = "Preschool-12th", "11th" = "Preschool-12th", "12th" = "Preschool-12th", "1st-4th" = "Preschool-12th", "5th-6th" = "Preschool-12th", "7th-8th" = "Preschool-12th", "9th" = "Preschool-12th", "Assoc-acdm" = "Associate", "Assoc-voc" = "Associate", "Preschool" = "Preschool-12th")
 ```
 
-*Lump marital_status levels*
+**Lump `marital_status` levels**
 
 ```{r, comment=NA}
 test_data$marital_status <- recode(test_data$marital_status, "Married-AF-spouse" = "Married", "Married-civ-spouse" = "Married", "Married-spouse-absent" = "Married")
 ```
 
-*Lump occupation levels*
+**Lump `occupation` levels**
 
 ```{r, comment=NA}
 test_data$occupation <- recode(test_data$occupation, "Protective-serv" = "Service-sales-workers", "Sales" = "Service-sales-workers", "Priv-house-serv" = "Service-sales-workers", "Other-service" = "Service-sales-workers", "Exec-managerial" = "Managers", "Prof-specialty" = "Professionals", "Tech-support" = "Technical", "Adm-clerical" = "Clerical", "Machine-op-inspct" = "Labor-trades", "Handlers-cleaners" = "Labor-trades", "Farming-fishing" = "Labor-trades", "Craft-repair" = "Labor-trades", "Transport-moving" = "Labor-trades", "Armed-Forces" = "Other/Missing", "?" = "Other/Missing")
 ```
 
-Next, we reorder occupation levels to make *Clerical* the base level.
+Next, we reorder occupation levels to make `Clerical` the base level.
 
 ```{r, comment=NA}
 test_data$occupation <- relevel(test_data$occupation, ref = "Clerical")
 ```
 
 
-*Lump race levels*
+**Lump `race` levels**
 
 ```{r, comment=NA}
 test_data$race <- recode(test_data$race, "Amer-Indian-Eskimo" = "Non-white", "Asian-Pac-Islander" = "Non-white", "Black" = "Non-white", "Other" = "Non-white")
 ```
 
-We also use the recode() function to rename the income levels. 
+**Clean `income` levels**
+
+We remove the dots in `income` level names, as shown below. 
 
 ```{r, comment=NA}
 test_data$income <- recode(test_data$income, "<=50K." = "<=50K", ">50K." = ">50K")
 ```
 
-Having cleaned the test dataset, we first use *model1* and the *predict()* function to predict the test set. We then use *confusionMatrix()* to compute the test accuracy score. 
+Having cleaned the test dataset, we can now use the `predict()` function to make predictions on the test set. We then use `confusionMatrix()` to compute the test accuracy score and other metrics. 
 
 ```{r, comment=NA}
 prob_test <- predict(model1, newdata = test_data, type = "response")
@@ -681,8 +724,8 @@ confusionMatrix(pred_income_test, test_data$income)
 ```
 
 
-From the output above, we see that the test accuracy is 0.83, which is slightly better than the train accuracy. So, we can conclude that the model will probably generalize well. 
-
+From the output above, we see that the test accuracy is 0.83, which is slightly better than the train accuracy.
+Also, the test balanced accuracy (0.7248) is slightly higher than the training balanced accuracy (0.7231). So, we can conclude that the model probably generalizes well on new data. 
 
 ## References
 
